@@ -1,0 +1,24 @@
+#!/bin/bash
+if [ ! -d "$(pwd)/etc/letsencrypt/letsencrypt" ] 
+then
+    echo "$(pwd)/etc/letsencrypt/letsencrypt does not exist."
+elif [ ! -d "$(pwd)/etc/letsencrypt/etc/letsencrypt" ]
+then
+    echo "$(pwd)/etc/letsencrypt/etc/letsencrypt does not exist."
+elif [ ! -f "$(pwd)/etc/nginx/nginx.conf" ]
+then
+    echo "$(pwd)/etc/nginx/nginx.conf"
+elif [ ! -d "$(pwd)/var/www/html" ]
+then
+    echo "$(pwd)/var/www/html does not exist."
+else
+    echo "Starting nginx."
+    docker stop nginx && docker rm nginx
+    docker run -dit --rm --name nginx \
+    -p 80:80 -p 443:443 \
+    -v $(pwd)/var/www/html/:/var/www/html \
+    -v $(pwd)/etc/nginx/nginx.conf:/etc/nginx/nginx.conf \
+    -v $(pwd)/etc/letsencrypt/letsencrypt:/letsencrypt \
+    -v $(pwd)/etc/letsencrypt/etc/letsencrypt:/etc/letsencrypt \
+    nginx
+fi
